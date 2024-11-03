@@ -18,6 +18,7 @@ import rasterio
 from rasterio.windows import Window
 import folium
 from streamlit_folium import folium_static
+import tempfile
 
 def run_inference(
     image_array,
@@ -148,18 +149,26 @@ def infer():
     # read the image
     if image_file_buffer is not None:
         if image_file_buffer.name.endswith((".tif", ".tiff")):
-            with rasterio.open(image_file_buffer) as src:
-                image_array = src.read()
-                image_array = np.transpose(image_array, (1, 2, 0))
-                if src.crs:
-                    st.write("Georeferenced TIFF detected. Displaying on basemap.")
-                    m = folium.Map(location=[src.bounds.top, src.bounds.left], zoom_start=10)
-                    folium.raster_layers.ImageOverlay(
-                        image=image_array,
-                        bounds=[[src.bounds.bottom, src.bounds.left], [src.bounds.top, src.bounds.right]],
-                        opacity=0.6
-                    ).add_to(m)
-                    folium_static(m)
+            try:
+                # Write the uploaded file to a temporary file
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".tif") as temp_file:
+                    temp_file.write(image_file_buffer.getvalue())
+                    temp_file_path = temp_file.name
+
+                with rasterio.open(temp_file_path) as src:
+                    image_array = src.read()
+                    image_array = np.transpose(image_array, (1, 2, 0))
+                    if src.crs:
+                        st.write("Georeferenced TIFF detected. Displaying on basemap.")
+                        m = folium.Map(location=[src.bounds.top, src.bounds.left], zoom_start=10)
+                        folium.raster_layers.ImageOverlay(
+                            image=image_array,
+                            bounds=[[src.bounds.bottom, src.bounds.left], [src.bounds.top, src.bounds.right]],
+                            opacity=0.6
+                        ).add_to(m)
+                        folium_static(m)
+            except Exception as e:
+                st.write(f"Error reading TIFF file: {e}")
         else:
             image = Image.open(image_file_buffer)
             image = image.resize((1250, 650))  # Resize to (650, 1250)
@@ -185,19 +194,27 @@ def infer():
     infer_button = st.sidebar.button("Run inference")
     if infer_button:
         if image_file_buffer.name.endswith((".tif", ".tiff")):
-            with rasterio.open(image_file_buffer) as src:
-                height, width, _ = image_array.shape
-                window_size = (1250, 650)
-                stride = 625
-                mask_pred_array = np.zeros((height, width, 3), dtype=np.uint8)
-                for y in range(0, height - window_size[1], stride):
-                    for x in range(0, width - window_size[0], stride):
-                        window = Window(x, y, window_size[0], window_size[1])
-                        window_image = src.read(window=window)
-                        window_image = np.transpose(window_image, (1, 2, 0))
-                        mask_pred = run_inference(window_image, file_weights)
-                        mask_pred_array[y:y+window_size[1], x:x+window_size[0]] = mask_pred
-                mask_pred_image = Image.fromarray(mask_pred_array.astype("uint8"), "RGB")
+            try:
+                # Write the uploaded file to a temporary file
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".tif") as temp_file:
+                    temp_file.write(image_file_buffer.getvalue())
+                    temp_file_path = temp_file.name
+
+                with rasterio.open(temp_file_path) as src:
+                    height, width, _ = image_array.shape
+                    window_size = (1250, 650)
+                    stride = 625
+                    mask_pred_array = np.zeros((height, width, 3), dtype=np.uint8)
+                    for y in range(0, height - window_size[1], stride):
+                        for x in range(0, width - window_size[0], stride):
+                            window = Window(x, y, window_size[0], window_size[1])
+                            window_image = src.read(window=window)
+                            window_image = np.transpose(window_image, (1, 2, 0))
+                            mask_pred = run_inference(window_image, file_weights)
+                            mask_pred_array[y:y+window_size[1], x:x+window_size[0]] = mask_pred
+                    mask_pred_image = Image.fromarray(mask_pred_array.astype("uint8"), "RGB")
+            except Exception as e:
+                st.write(f"Error during inference: {e}")
         else:
             mask_pred = run_inference(image_array, file_weights)
             mask_pred_image = Image.fromarray(mask_pred.astype("uint8"), "RGB")
