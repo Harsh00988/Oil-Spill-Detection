@@ -55,7 +55,7 @@ def run_inference(
         a numpy array of the prediction mask
     """
     # Download the model from GCS
-    download_model_from_gcs('oil-spill-bucket', file_weights, file_weights)
+    download_model_from_gcs('oil-spill-bucket', 'oil_spill_seg_resnet_50_deeplab_v3+_80.pt', file_weights)
 
     # Initialize model and device
     oil_spill_seg_model = ResNet50DeepLabV3Plus(
@@ -146,7 +146,7 @@ def show_mask_interpretation():
 def infer():
     st.title("Oil spill detection app")
 
-    file_weights_default = "oil_spill_seg_resnet_50_deeplab_v3+_80.pt"
+    file_weights_default = "/data/models/oil_spill_seg_resnet_50_deeplab_v3+_80.pt"
     file_weights = st.sidebar.text_input("File model weights", file_weights_default)
 
     if not os.path.isfile(file_weights):
