@@ -27,7 +27,7 @@ COPY ./app.py .
 
 # Download the model from GCS
 RUN mkdir -p /data/models
-RUN python -c "from google.cloud import storage; storage.Client().bucket('oil-spill-bucket').blob('oil_spill_seg_resnet_50_deeplab_v3+_80.pt').download_to_filename('/data/models/oil_spill_seg_resnet_50_deeplab_v3+_80.pt')"
+RUN python -c "from google.cloud import storage; storage.Client().bucket('oil-spill-bucket-1').blob('oil_spill_seg_resnet_50_deeplab_v3+_80.pt').download_to_filename('/data/models/oil_spill_seg_resnet_50_deeplab_v3+_80.pt')"
 
 # Copy sample padding image
 COPY ./sample_padding_image_for_inference/img_0814.jpg /data/images/img_0814.jpg
