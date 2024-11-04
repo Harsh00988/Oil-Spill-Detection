@@ -19,6 +19,15 @@ from rasterio.windows import Window
 import folium
 from streamlit_folium import folium_static
 import tempfile
+from google.cloud import storage
+
+# Function to download model from GCS
+def download_model_from_gcs(bucket_name, model_file_name, destination_file_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(model_file_name)
+    blob.download_to_filename(destination_file_name)
+    st.write(f"Model downloaded from GCS to {destination_file_name}")
 
 def run_inference(
     image_array,
@@ -45,6 +54,9 @@ def run_inference(
     pred_mask_arr : ndarray
         a numpy array of the prediction mask
     """
+    # Download the model from GCS
+    download_model_from_gcs('oil-spill-bucket', 'oil_spill_seg_resnet_50_deeplab_v3+_80.pt', file_weights)
+
     # Initialize model and device
     oil_spill_seg_model = ResNet50DeepLabV3Plus(
         num_classes=num_classes, pretrained=True
@@ -134,7 +146,7 @@ def show_mask_interpretation():
 def infer():
     st.title("Oil spill detection app")
 
-    file_weights_default = "./oil_spill_seg_resnet_50_deeplab_v3+_80.pt"
+    file_weights_default = "/data/models/oil_spill_seg_resnet_50_deeplab_v3+_80.pt"
     file_weights = st.sidebar.text_input("File model weights", file_weights_default)
 
     if not os.path.isfile(file_weights):
