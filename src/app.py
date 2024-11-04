@@ -55,7 +55,7 @@ def run_inference(
         a numpy array of the prediction mask
     """
     # Download the model from GCS
-    download_model_from_gcs('oil-spill-bucket', 'oil_spill_seg_resnet_50_deeplab_v3+_80.pt', file_weights)
+    download_model_from_gcs('oil-spill-bucket-1', 'oil_spill_seg_resnet_50_deeplab_v3+_80.pt', file_weights)
 
     # Initialize model and device
     oil_spill_seg_model = ResNet50DeepLabV3Plus(
