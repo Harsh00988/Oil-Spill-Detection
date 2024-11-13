@@ -13,7 +13,6 @@ from torchvision.models.resnet import (
     ResNet18_Weights,
     ResNet34_Weights,
     ResNet50_Weights,
-    ResNet101_Weights,
 )
 
 from torchvision.ops.misc import Conv2dNormActivation
@@ -25,8 +24,6 @@ from torchvision.models.efficientnet import (
 )
 from torchvision.models.efficientnet import (
     EfficientNet_V2_S_Weights,
-    EfficientNet_V2_M_Weights,
-    EfficientNet_V2_L_Weights,
 )
 
 
@@ -37,7 +34,7 @@ class CustomResNet(nn.Module):
         block=BasicBlock,
         zero_init_residual=False,
         groups=1,
-        num_classes=1000,
+        num_classes=2,
         width_per_group=64,
         replace_stride_with_dilation=None,
         norm_layer=None,
@@ -280,23 +277,6 @@ def resnet50(pretrained=True):
     return _resnet(Bottleneck, [3, 4, 6, 3], weights=weights)
 
 
-def resnet101(pretrained=True):
-    r"""ResNet-101 model from
-    `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_
-
-    ---------
-    Arguments
-    ---------
-    pretrained : bool
-        if True, returns a model pre-trained on ImageNet
-    """
-    if pretrained:
-        weights = ResNet101_Weights.IMAGENET1K_V1
-    else:
-        weights = None
-    return _resnet(Bottleneck, [3, 4, 23, 3], weights=weights)
-
-
 class CustomEfficientNet(nn.Module):
     def __init__(
         self,
@@ -493,56 +473,6 @@ def efficientnet_v2_s(pretrained=True, **kwargs: Any):
     return _efficientnet(
         inverted_residual_setting,
         0.2,
-        last_channel,
-        weights=weights,
-        **kwargs,
-    )
-
-
-def efficientnet_v2_m(pretrained=True, **kwargs: Any):
-    """
-    ---------
-    Arguments
-    ---------
-    pretrained : bool
-        if True, returns a model pre-trained on ImageNet
-    **kwargs :
-        additional arguments
-    """
-    which_efficientnet = "efficientnet_v2_m"
-    inverted_residual_setting, last_channel = _efficientnet_conf(which_efficientnet)
-    if pretrained:
-        weights = EfficientNet_V2_M_Weights.IMAGENET1K_V1
-    else:
-        weights = None
-    return _efficientnet(
-        inverted_residual_setting,
-        0.3,
-        last_channel,
-        weights=weights,
-        **kwargs,
-    )
-
-
-def efficientnet_v2_l(pretrained=True, **kwargs: Any):
-    """
-    ---------
-    Arguments
-    ---------
-    pretrained : bool
-        if True, returns a model pre-trained on ImageNet
-    **kwargs :
-        additional arguments
-    """
-    which_efficientnet = "efficientnet_v2_l"
-    inverted_residual_setting, last_channel = _efficientnet_conf(which_efficientnet)
-    if pretrained:
-        weights = EfficientNet_V2_L_Weights.IMAGENET1K_V1
-    else:
-        weights = None
-    return _efficientnet(
-        inverted_residual_setting,
-        0.4,
         last_channel,
         weights=weights,
         **kwargs,

@@ -43,7 +43,7 @@ def compute_stats(FLAGS):
 
 def main():
     file_json = "image_stats.json"
-    dir_images = "/home/abhishek/Desktop/RUG/htsm_masterwork/oil-spill-detection-dataset/train/images/"
+    dir_images = "./"
 
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter

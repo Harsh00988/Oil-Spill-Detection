@@ -25,6 +25,6 @@ COPY ./training/seg_models.py ./training/
 COPY ./training/image_stats.json ./training/
 COPY ./app.py .
 
-EXPOSE 8000
+EXPOSE 8080
 
-CMD ["streamlit", "run", "app.py", "--server.port=8000"]
+CMD ["streamlit", "run", "app.py", "--server.port=8080"]

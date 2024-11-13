@@ -255,7 +255,7 @@ def batch_train(FLAGS):
 
 def main():
     dir_dataset = (
-        "/home/abhishek/Desktop/RUG/htsm_masterwork/oil-spill-detection-dataset/"
+        "../../../../Dataset/SOS/train/sentinel/"
     )
     learning_rate = 1e-2
     weight_decay = 1e-4

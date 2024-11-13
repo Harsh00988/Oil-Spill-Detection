@@ -42,7 +42,7 @@ def compute_kfold_validation_metrics(FLAGS):
 
 
 def main():
-    dir_results = "/home/abhishek/Desktop/RUG/htsm_masterwork/resnet_patch_padding_sgd/"
+    dir_results = "./"
     file_metrics = "train_metrics.csv"
     which_model = "resnet_18_deeplab_v3+"
 

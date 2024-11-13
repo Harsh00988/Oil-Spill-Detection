@@ -212,7 +212,7 @@ def run_inference(FLAGS):
 
 def main():
     dir_dataset = (
-        "/home/abhishek/Desktop/RUG/htsm_masterwork/oil-spill-detection-dataset/"
+        "./"
     )
     num_classes = 5
     which_model = "resnet_18_deeplab_v3+"
@@ -225,7 +225,7 @@ def main():
         "efficientnet_v2_m_deeplab_v3",
         "efficientnet_v2_l_deeplab_v3",
     ]
-    file_model_weights = "/home/abhishek/Desktop/RUG/htsm_masterwork/resnet_patch_padding_sgd/fold_1/resnet_18_deeplab_v3+/oil_spill_seg_resnet_18_deeplab_v3+_98.pt"
+    file_model_weights = "./"
     dir_save_preds = "./fold_1_resnet_18_deeplab_v3+_98/"
 
     parser = argparse.ArgumentParser(
